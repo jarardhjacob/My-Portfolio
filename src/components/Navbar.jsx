@@ -38,7 +38,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed w-full top-0 z-50 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 transition-colors duration-300">
+    <nav className="fixed w-full top-0 z-50 bg-white/80 dark:bg-black/80 backdrop-blur-md transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <motion.div
@@ -67,6 +67,17 @@ const Navbar = () => {
                   {link.title}
                 </motion.a>
               ))}
+              <motion.a
+                href="/resume.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors"
+              >
+                Resume
+              </motion.a>
               <motion.button
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -126,6 +137,14 @@ const Navbar = () => {
                   {link.title}
                 </a>
               ))}
+              <a
+                href="/resume.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-3 py-2 rounded-md text-base font-semibold text-center text-white bg-indigo-600 hover:bg-indigo-700 transition-colors"
+              >
+                Resume
+              </a>
             </div>
           </motion.div>
         )}
