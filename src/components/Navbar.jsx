@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Moon, Sun, Menu, X } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
@@ -6,6 +6,7 @@ import { useTheme } from '../hooks/useTheme';
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('');
 
   const navLinks = [
     { title: 'About', href: '#about' },
@@ -14,7 +15,28 @@ const Navbar = () => {
     { title: 'Contact', href: '#contact' },
   ];
 
-  const handleScroll = (e, href) => {
+  // Track active section based on scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = navLinks.map(link => link.href.replace('#', ''));
+      const scrollPosition = window.scrollY + 100; // Offset for navbar height
+
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = document.getElementById(sections[i]);
+        if (section && section.offsetTop <= scrollPosition) {
+          setActiveSection(`#${sections[i]}`);
+          return;
+        }
+      }
+      setActiveSection('');
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Check initial position
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleScrollClick = (e, href) => {
     e.preventDefault();
     setIsOpen(false);
 
@@ -58,13 +80,24 @@ const Navbar = () => {
                 <motion.a
                   key={link.title}
                   href={link.href}
-                  onClick={(e) => handleScroll(e, link.href)}
+                  onClick={(e) => handleScrollClick(e, link.href)}
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  className={`relative px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    activeSection === link.href
+                      ? 'text-indigo-600 dark:text-indigo-400'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400'
+                  }`}
                 >
                   {link.title}
+                  {activeSection === link.href && (
+                    <motion.div
+                      layoutId="activeSection"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600 dark:bg-indigo-400"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
                 </motion.a>
               ))}
               <motion.a
@@ -131,8 +164,12 @@ const Navbar = () => {
                 <a
                   key={link.title}
                   href={link.href}
-                  onClick={(e) => handleScroll(e, link.href)}
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-50 dark:hover:bg-gray-900"
+                  onClick={(e) => handleScrollClick(e, link.href)}
+                  className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                    activeSection === link.href
+                      ? 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-50 dark:hover:bg-gray-900'
+                  }`}
                 >
                   {link.title}
                 </a>
