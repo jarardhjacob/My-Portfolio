@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ExternalLink, Github } from 'lucide-react';
 
@@ -29,6 +29,142 @@ const projects = [
   },
 ];
 
+// Individual Project Card Component with 3D Tilt
+const ProjectCard = ({ project, index }) => {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    const rotateX = ((y - centerY) / centerY) * -10; // Max 10deg tilt
+    const rotateY = ((x - centerX) / centerX) * 10;
+    
+    setMousePosition({ x: rotateX, y: rotateY });
+  };
+
+  const handleMouseLeave = () => {
+    setMousePosition({ x: 0, y: 0 });
+    setIsHovered(false);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.1 }}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={handleMouseLeave}
+      animate={{
+        rotateX: mousePosition.x,
+        rotateY: mousePosition.y,
+      }}
+      style={{
+        transformStyle: "preserve-3d",
+        perspective: "1000px",
+      }}
+      className="relative bg-gray-50 dark:bg-gray-900 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-2xl transition-shadow duration-300"
+    >
+      {/* Glass Reflection Overlay */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={isHovered ? { 
+          opacity: [0, 0.3, 0],
+          x: ['-100%', '100%']
+        } : { opacity: 0 }}
+        transition={{ duration: 1, ease: "easeInOut" }}
+        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/20 to-transparent pointer-events-none z-20"
+        style={{ transform: 'skewX(-20deg)' }}
+      />
+
+      {/* Image Container with Smooth Zoom */}
+      <div className="relative overflow-hidden aspect-video group">
+        <motion.img
+          src={project.image}
+          alt={project.title}
+          animate={isHovered ? { scale: 1.15 } : { scale: 1 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="w-full h-full object-cover"
+        />
+        
+        {/* Overlay with Icons */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={isHovered ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent flex items-center justify-center gap-4"
+        >
+          {/* Icon Spring Hover - Live Demo */}
+          <motion.a
+            href={project.liveUrl}
+            whileHover={{ 
+              scale: 1.2,
+              rotate: 5,
+            }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ 
+              type: "spring", 
+              stiffness: 400, 
+              damping: 10 
+            }}
+            className="p-3 bg-white rounded-full text-gray-900 hover:bg-indigo-600 hover:text-white transition-colors shadow-lg"
+            title="View Live Demo"
+          >
+            <ExternalLink className="w-5 h-5" />
+          </motion.a>
+          
+          {/* Icon Spring Hover - GitHub */}
+          <motion.a
+            href={project.githubUrl}
+            whileHover={{ 
+              scale: 1.2,
+              rotate: -5,
+            }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ 
+              type: "spring", 
+              stiffness: 400, 
+              damping: 10 
+            }}
+            className="p-3 bg-white rounded-full text-gray-900 hover:bg-indigo-600 hover:text-white transition-colors shadow-lg"
+            title="View Code"
+          >
+            <Github className="w-5 h-5" />
+          </motion.a>
+        </motion.div>
+      </div>
+
+      {/* Content Section */}
+      <div className="p-6" style={{ transform: "translateZ(20px)" }}>
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+          {project.title}
+        </h3>
+        <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">
+          {project.description}
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {project.tags.map((tag) => (
+            <motion.span
+              key={tag}
+              whileHover={{ scale: 1.05 }}
+              className="px-3 py-1 text-xs font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 rounded-full"
+            >
+              {tag}
+            </motion.span>
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
 const Projects = () => {
   return (
     <section id="projects" className="py-20 bg-white dark:bg-black">
@@ -52,49 +188,7 @@ const Projects = () => {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {projects.map((project, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="bg-gray-50 dark:bg-gray-900 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl transition-shadow duration-300"
-            >
-              <div className="relative overflow-hidden aspect-video group">
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
-                    <a href={project.liveUrl} className="p-3 bg-white rounded-full text-gray-900 hover:bg-gray-100 transition-colors" title="View Live Demo">
-                        <ExternalLink className="w-5 h-5" />
-                    </a>
-                    <a href={project.githubUrl} className="p-3 bg-white rounded-full text-gray-900 hover:bg-gray-100 transition-colors" title="View Code">
-                        <Github className="w-5 h-5" />
-                    </a>
-                </div>
-              </div>
-
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                  {project.title}
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">
-                  {project.description}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {project.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-3 py-1 text-xs font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 rounded-full"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
+            <ProjectCard key={index} project={project} index={index} />
           ))}
         </div>
       </div>
