@@ -162,38 +162,95 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* 3D Logo with Hover Effect */}
+          {/* Minimal 3D Animated Logo */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ 
-              opacity: 1, 
-              x: 0,
-              rotateX: logoHover.x,
-              rotateY: logoHover.y,
-              scale: isLogoHovered ? 1.05 : 1,
-            }}
             onMouseMove={handleLogoMouseMove}
             onMouseEnter={() => setIsLogoHovered(true)}
             onMouseLeave={() => {
               setLogoHover({ x: 0, y: 0 });
               setIsLogoHovered(false);
             }}
+            animate={{ 
+              rotateX: logoHover.x,
+              rotateY: logoHover.y,
+              scale: isLogoHovered ? 1.05 : 1,
+            }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
             style={{
               transformStyle: "preserve-3d",
               perspective: "1000px",
             }}
-            className="relative flex-shrink-0 font-bold text-2xl tracking-tighter cursor-pointer"
+            className="relative flex items-center gap-1 cursor-pointer z-50 group select-none"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
-            {/* Logo Glow on Hover */}
-            {isLogoHovered && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 0.4 }}
-                className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 blur-xl -z-10"
-              />
-            )}
-            <span className="text-black dark:text-white" style={{ transform: "translateZ(20px)" }}>Jarardh</span>
-            <span className="text-indigo-600 dark:text-indigo-400" style={{ transform: "translateZ(30px)" }}>.</span>
+             {/* 2. The "Jarardh" Text */}
+             <div className="relative" style={{ transformStyle: "preserve-3d" }}>
+                 <motion.div
+                   initial={{ opacity: 0, x: -20, filter: 'blur(8px)', backgroundPosition: '0% 50%' }}
+                   animate={{ 
+                     opacity: 1, 
+                     x: 0, 
+                     filter: 'blur(0px)',
+                     backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
+                   }}
+                   transition={{ 
+                     opacity: { delay: 0.5, duration: 0.7, ease: "easeOut" },
+                     x: { delay: 0.5, duration: 0.7, ease: "easeOut" },
+                     filter: { delay: 0.5, duration: 0.7, ease: "easeOut" },
+                     backgroundPosition: {
+                       duration: 5,
+                       repeat: Infinity,
+                       ease: "linear",
+                       repeatType: "loop"
+                     }
+                   }}
+                   className="font-bold text-2xl tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-indigo-500 to-gray-900 dark:from-white dark:via-indigo-400 dark:to-white bg-[length:200%_auto]"
+                   style={{ transform: "translateZ(20px)" }}
+                 >
+                   Jarardh
+                 </motion.div>
+                 
+                 {/* Layered Shadow for Depth */}
+                 <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.7, duration: 0.8 }}
+                    className="absolute inset-0 text-indigo-500/20 dark:text-indigo-400/20 blur-[2px]"
+                    style={{ transform: "translateZ(5px)", pointerEvents: 'none' }}
+                 >
+                    Jarardh
+                 </motion.div>
+             </div>
+
+             {/* 1. The Glowing Dot */}
+             <motion.div
+               initial={{ scale: 0, opacity: 0 }}
+               animate={{ scale: 1, opacity: 1 }}
+               transition={{ 
+                 type: "spring",
+                 stiffness: 200,
+                 damping: 15,
+                 delay: 0.1 
+               }}
+               className="relative flex items-center justify-center p-1"
+               style={{ transform: "translateZ(30px)" }}
+             >
+                {/* Core Dot with Indigo Glow */}
+                <div className="w-3 h-3 bg-indigo-600 dark:bg-indigo-500 rounded-full shadow-[0_0_15px_rgba(99,102,241,0.8)] ring-2 ring-indigo-400/20" />
+                
+                {/* Soft Pulse Ring */}
+                <motion.div 
+                  animate={{ 
+                    opacity: [0.4, 0] 
+                  }}
+                  transition={{ 
+                    duration: 2, 
+                    repeat: Infinity, 
+                    ease: "easeOut" 
+                  }}
+                  className="absolute inset-0 bg-indigo-500 rounded-full -z-10"
+                />
+             </motion.div>
           </motion.div>
 
           {/* Desktop Menu */}

@@ -132,12 +132,12 @@ const Hero = () => {
             transition={{ duration: 1, delay: 0.8 }}
             className="mt-16 flex gap-6"
           >
-            <SocialLink href="#" icon={<Github className="w-6 h-6" />} label="GitHub" />
-            <SocialLink href="#" icon={<Linkedin className="w-6 h-6" />} label="LinkedIn" />
-            <SocialLink href="#" icon={<Mail className="w-6 h-6" />} label="Email" />
+            <SocialLink href="https://github.com/jarardhjacob" icon={<Github className="w-6 h-6" />} label="GitHub" />
+            <SocialLink href="https://www.linkedin.com/in/jarardh-jacob-c" icon={<Linkedin className="w-6 h-6" />} label="LinkedIn" />
+            <SocialLink href="mailto:[EMAIL_ADDRESS]" icon={<Mail className="w-6 h-6" />} label="Email" />
           </motion.div>
         </div>
-      </div>
+      </div>  
     </section>
   );
 };
